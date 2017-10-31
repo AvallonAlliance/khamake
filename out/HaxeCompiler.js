@@ -25,6 +25,7 @@ class HaxeCompiler {
         this.resourceDir = resourceDir;
         this.haxeDirectory = haxeDirectory;
         this.hxml = hxml;
+        this.compilationCounter = 0;
         this.sourceMatchers = [];
         for (let dir of sourceDirectories) {
             this.sourceMatchers.push(path.join(dir, '**'));
@@ -143,7 +144,8 @@ class HaxeCompiler {
                     fs.renameSync(path.join(this.from, this.temp), path.join(this.from, this.to));
                 }
                 this.ready = true;
-                log.info('Haxe compile end.');
+                this.compilationCounter++;
+                log.info('Haxe compile end. #' + this.compilationCounter);
                 if (code === 0)
                     resolve();
                 else

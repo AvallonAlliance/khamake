@@ -18,6 +18,7 @@ export class HaxeCompiler {
 	to: string;
 	resourceDir: string;
 	compilationServer: child_process.ChildProcess;
+    compilationCounter: number;
 		
 	constructor(from: string, temp: string, to: string, resourceDir: string, haxeDirectory: string, hxml: string, sourceDirectories: Array<string>) {
 		this.from = from;
@@ -26,6 +27,7 @@ export class HaxeCompiler {
 		this.resourceDir = resourceDir;
 		this.haxeDirectory = haxeDirectory;
 		this.hxml = hxml;
+		this.compilationCounter = 0;
 		
 		this.sourceMatchers = [];
 		for (let dir of sourceDirectories) {
@@ -154,7 +156,8 @@ export class HaxeCompiler {
 					fs.renameSync(path.join(this.from, this.temp), path.join(this.from, this.to));
 				}
 				this.ready = true;
-				log.info('Haxe compile end.');
+				this.compilationCounter++;
+				log.info('Haxe compile end. #' + this.compilationCounter);
 				if (code === 0) resolve();
 				else reject('Haxe compiler error.');
 				if (this.todo) {

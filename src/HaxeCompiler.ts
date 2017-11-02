@@ -156,8 +156,8 @@ export class HaxeCompiler {
 					fs.renameSync(path.join(this.from, this.temp), path.join(this.from, this.to));
 				}
 				this.ready = true;
-				this.compilationCounter++;
-				log.info('Haxe compile end. #' + this.compilationCounter);
+                let compileEndTime = new Date().toTimeString().split(' ')[0];
+				log.info('Haxe compile end at ' + compileEndTime);
 				if (code === 0) resolve();
 				else reject('Haxe compiler error.');
 				if (this.todo) {

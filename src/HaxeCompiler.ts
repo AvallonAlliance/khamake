@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
 import * as log from './log';
+import * as http from 'http';
 import {sys} from './exec';
 
 export class HaxeCompiler {
@@ -18,7 +19,6 @@ export class HaxeCompiler {
 	to: string;
 	resourceDir: string;
 	compilationServer: child_process.ChildProcess;
-    compilationCounter: number;
 		
 	constructor(from: string, temp: string, to: string, resourceDir: string, haxeDirectory: string, hxml: string, sourceDirectories: Array<string>) {
 		this.from = from;
@@ -27,7 +27,6 @@ export class HaxeCompiler {
 		this.resourceDir = resourceDir;
 		this.haxeDirectory = haxeDirectory;
 		this.hxml = hxml;
-		this.compilationCounter = 0;
 		
 		this.sourceMatchers = [];
 		for (let dir of sourceDirectories) {
@@ -158,6 +157,8 @@ export class HaxeCompiler {
 				this.ready = true;
                 let compileEndTime = new Date().toTimeString().split(' ')[0];
 				log.info('Haxe compile end at ' + compileEndTime);
+                this.notify();
+
 				if (code === 0) resolve();
 				else reject('Haxe compiler error.');
 				if (this.todo) {
@@ -183,7 +184,11 @@ export class HaxeCompiler {
 			});
 		});
 	}
-	
+
+	notify() {
+        http.get('http://localhost:9034/reload');
+	}
+
 	private static spinRename(from: string, to: string): void {
 		for (; ; ) {
 			if (fs.existsSync(from)) {

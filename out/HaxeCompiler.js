@@ -13,6 +13,7 @@ const fs = require("fs");
 const path = require("path");
 const chokidar = require("chokidar");
 const log = require("./log");
+const http = require("http");
 const exec_1 = require("./exec");
 class HaxeCompiler {
     constructor(from, temp, to, resourceDir, haxeDirectory, hxml, sourceDirectories) {
@@ -25,7 +26,6 @@ class HaxeCompiler {
         this.resourceDir = resourceDir;
         this.haxeDirectory = haxeDirectory;
         this.hxml = hxml;
-        this.compilationCounter = 0;
         this.sourceMatchers = [];
         for (let dir of sourceDirectories) {
             this.sourceMatchers.push(path.join(dir, '**'));
@@ -146,6 +146,7 @@ class HaxeCompiler {
                 this.ready = true;
                 let compileEndTime = new Date().toTimeString().split(' ')[0];
                 log.info('Haxe compile end at ' + compileEndTime);
+                this.notify();
                 if (code === 0)
                     resolve();
                 else
@@ -171,6 +172,9 @@ class HaxeCompiler {
                 }
             });
         });
+    }
+    notify() {
+        http.get('http://localhost:9034/reload');
     }
     static spinRename(from, to) {
         for (;;) {
